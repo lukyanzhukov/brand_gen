@@ -1,0 +1,16 @@
+{
+  "functions": {
+    "app/api/build/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/test-generate/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/test-palette/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/test-extract/route.ts": {
+      "maxDuration": 300
+    }
+  }
+}

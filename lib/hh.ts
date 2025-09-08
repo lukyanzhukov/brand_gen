@@ -291,6 +291,7 @@ export async function getEmployer(employerId: string): Promise<HHEmployer | null
       headers: {
         'User-Agent': 'BrandGen/1.0 (hh.ru brand page generator)',
       },
+      signal: AbortSignal.timeout(30000), // 30 секунд таймаут
     })
 
     if (!response.ok) {
@@ -321,6 +322,7 @@ export async function getEmployerVacancies(
         headers: {
           'User-Agent': 'BrandGen/1.0 (hh.ru brand page generator)',
         },
+        signal: AbortSignal.timeout(30000), // 30 секунд таймаут
       }
     )
 

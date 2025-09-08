@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: brand-gen
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: BASE_URL
+        value: https://llmgtw.hhdev.ru/proxy/openai
+      - key: AUTH_TOKEN
+        value: 81e71e36-ad00-4e86-93e3-81a459b39328
+      - key: OPENAI_API_KEY
+        value: 81e71e36-ad00-4e86-93e3-81a459b39328
+      - key: HH_API_BASE
+        value: https://api.hh.ru

@@ -74,7 +74,7 @@ export interface ColorPalette {
  * Простая fallback палитра
  */
 export const FALLBACK_PALETTE: ColorPalette = {
-  primary: '#2563eb',
+  primary: '#FF6B35',
   onPrimary: '#ffffff',
   secondary: '#64748b',
   onSecondary: '#ffffff',
@@ -82,7 +82,7 @@ export const FALLBACK_PALETTE: ColorPalette = {
   surface: '#f8fafc',
   onBackground: '#0f172a',
   onSurface: '#334155',
-  accent: '#f59e0b',
+  accent: '#F7931E',
   onAccent: '#ffffff',
   error: '#dc2626',
   onError: '#ffffff',
@@ -92,50 +92,50 @@ export const FALLBACK_PALETTE: ColorPalette = {
   hero: {
     background: '#f8fafc',
     text: '#0f172a',
-    accent: '#2563eb'
+    accent: '#FF6B35'
   },
   about: {
     background: '#ffffff',
     text: '#0f172a',
-    accent: '#2563eb'
+    accent: '#FF6B35'
   },
   tracks: {
     background: '#ffffff',
     text: '#0f172a',
-    accent: '#2563eb'
+    accent: '#FF6B35'
   },
   geo: {
     background: '#ffffff',
     text: '#0f172a',
-    accent: '#2563eb'
+    accent: '#FF6B35'
   },
   facts: {
     background: '#f8fafc',
     text: '#0f172a',
-    accent: '#2563eb'
+    accent: '#FF6B35'
   },
   benefits: {
     background: '#f8fafc',
     text: '#0f172a',
-    accent: '#2563eb'
+    accent: '#FF6B35'
   },
   culture: {
     background: '#ffffff',
     text: '#0f172a',
-    accent: '#2563eb'
+    accent: '#FF6B35'
   },
   media: {
     background: '#ffffff',
     text: '#0f172a',
-    accent: '#2563eb'
+    accent: '#FF6B35'
   },
   hiring: {
     background: '#ffffff',
     text: '#0f172a',
-    accent: '#2563eb'
+    accent: '#FF6B35'
   },
   cta: {
-    background: '#f59e0b',
+    background: '#F7931E',
     text: '#ffffff',
     accent: '#ffffff'
   }
@@ -228,56 +228,45 @@ export function generatePaletteCSS(palette: ColorPalette | undefined): Record<st
     '--input': safePalette.outline,
     '--ring': safePalette.primary,
     
-    // Блочные цвета
-    ...(safePalette.hero && {
-      '--hero-bg': safePalette.hero.background,
-      '--hero-text': safePalette.hero.text,
-      '--hero-accent': safePalette.hero.accent
-    }),
-    ...(safePalette.about && {
-      '--about-bg': safePalette.about.background,
-      '--about-text': safePalette.about.text,
-      '--about-accent': safePalette.about.accent
-    }),
-    ...(safePalette.tracks && {
-      '--tracks-bg': safePalette.tracks.background,
-      '--tracks-text': safePalette.tracks.text,
-      '--tracks-accent': safePalette.tracks.accent
-    }),
-    ...(safePalette.geo && {
-      '--geo-bg': safePalette.geo.background,
-      '--geo-text': safePalette.geo.text,
-      '--geo-accent': safePalette.geo.accent
-    }),
-    ...(safePalette.facts && {
-      '--facts-bg': safePalette.facts.background,
-      '--facts-text': safePalette.facts.text,
-      '--facts-accent': safePalette.facts.accent
-    }),
-    ...(safePalette.benefits && {
-      '--benefits-bg': safePalette.benefits.background,
-      '--benefits-text': safePalette.benefits.text,
-      '--benefits-accent': safePalette.benefits.accent
-    }),
-    ...(safePalette.culture && {
-      '--culture-bg': safePalette.culture.background,
-      '--culture-text': safePalette.culture.text,
-      '--culture-accent': safePalette.culture.accent
-    }),
-    ...(safePalette.media && {
-      '--media-bg': safePalette.media.background,
-      '--media-text': safePalette.media.text,
-      '--media-accent': safePalette.media.accent
-    }),
-    ...(safePalette.hiring && {
-      '--hiring-bg': safePalette.hiring.background,
-      '--hiring-text': safePalette.hiring.text,
-      '--hiring-accent': safePalette.hiring.accent
-    }),
-    ...(safePalette.cta && {
-      '--cta-bg': safePalette.cta.background,
-      '--cta-text': safePalette.cta.text,
-      '--cta-accent': safePalette.cta.accent
-    })
+    // Блочные цвета - используем специфичные цвета если есть, иначе основные
+    '--hero-bg': safePalette.hero?.background || safePalette.background,
+    '--hero-text': safePalette.hero?.text || safePalette.onBackground,
+    '--hero-accent': safePalette.hero?.accent || safePalette.primary,
+    
+    '--about-bg': safePalette.about?.background || safePalette.background,
+    '--about-text': safePalette.about?.text || safePalette.onBackground,
+    '--about-accent': safePalette.about?.accent || safePalette.primary,
+    
+    '--tracks-bg': safePalette.tracks?.background || safePalette.background,
+    '--tracks-text': safePalette.tracks?.text || safePalette.onBackground,
+    '--tracks-accent': safePalette.tracks?.accent || safePalette.primary,
+    
+    '--geo-bg': safePalette.geo?.background || safePalette.background,
+    '--geo-text': safePalette.geo?.text || safePalette.onBackground,
+    '--geo-accent': safePalette.geo?.accent || safePalette.primary,
+    
+    '--facts-bg': safePalette.facts?.background || safePalette.background,
+    '--facts-text': safePalette.facts?.text || safePalette.onBackground,
+    '--facts-accent': safePalette.facts?.accent || safePalette.primary,
+    
+    '--benefits-bg': safePalette.benefits?.background || safePalette.background,
+    '--benefits-text': safePalette.benefits?.text || safePalette.onBackground,
+    '--benefits-accent': safePalette.benefits?.accent || safePalette.primary,
+    
+    '--culture-bg': safePalette.culture?.background || safePalette.background,
+    '--culture-text': safePalette.culture?.text || safePalette.onBackground,
+    '--culture-accent': safePalette.culture?.accent || safePalette.primary,
+    
+    '--media-bg': safePalette.media?.background || safePalette.background,
+    '--media-text': safePalette.media?.text || safePalette.onBackground,
+    '--media-accent': safePalette.media?.accent || safePalette.primary,
+    
+    '--hiring-bg': safePalette.hiring?.background || safePalette.background,
+    '--hiring-text': safePalette.hiring?.text || safePalette.onBackground,
+    '--hiring-accent': safePalette.hiring?.accent || safePalette.primary,
+    
+    '--cta-bg': safePalette.cta?.background || safePalette.accent,
+    '--cta-text': safePalette.cta?.text || safePalette.onAccent,
+    '--cta-accent': safePalette.cta?.accent || safePalette.onAccent
   }
 }

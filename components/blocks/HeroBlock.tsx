@@ -1,5 +1,5 @@
 import React from 'react'
-import Image from 'next/image'
+import { HeroBlockProps } from '@/lib/types'
 
 interface DirectionCard {
   title: string
@@ -8,75 +8,105 @@ interface DirectionCard {
   color?: string
 }
 
-interface HeroBlockProps {
-  title: string
-  subtitle: string
-  cta: string
-  directions?: DirectionCard[]
-  logoUrl?: string
-  variant: 'imageLeft' | 'imageFull' | 'withDirections' | 'withTeam'
-  teamImage?: string
-  slogan?: string
-}
-
-export function HeroBlock({ 
-  title, 
-  subtitle, 
-  cta, 
-  directions = [], 
+export function HeroBlock({
+  title,
+  subtitle,
+  cta,
+  directions = [],
   logoUrl,
   variant,
   teamImage,
   slogan
 }: HeroBlockProps) {
   return (
-    <section className="py-16 px-4 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
-        {/* Main Hero Card */}
-        <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-3xl p-12 shadow-2xl relative overflow-hidden mb-8">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-10 right-10 w-32 h-32 bg-white rounded-full"></div>
-            <div className="absolute bottom-20 left-20 w-24 h-24 bg-white rounded-full"></div>
-            <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-white rounded-full"></div>
+    <section className="py-12 px-4" style={{ backgroundColor: 'var(--surface)' }}>
+      <div
+        className="max-w-7xl mx-auto rounded-2xl overflow-hidden shadow-xl"
+        style={{ background: `linear-gradient(135deg, var(--hero-accent), var(--primary))` }}
+      >
+        {/* полоса hero */}
+        <div className="relative p-10 lg:p-14">
+          {/* pattern */}
+          <div className="absolute inset-0 opacity-10 pointer-events-none">
+            <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full" style={{ backgroundColor: 'var(--background)' }} />
+            <div className="absolute bottom-6 left-10 w-16 h-16 rounded-full" style={{ backgroundColor: 'var(--background)' }} />
           </div>
 
-          <div className="relative z-10 text-center text-white">
-            <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-              {title}
-            </h1>
-            <p className="text-xl lg:text-2xl text-white/90 mb-6 leading-relaxed">
-              {subtitle}
-            </p>
-            {slogan && (
-              <p className="text-lg text-white/80 font-medium mb-8">
-                {slogan}
-              </p>
-            )}
-            <button className="bg-white text-gray-900 px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg">
-              {cta}
-            </button>
+          <div className="relative z-10 grid lg:grid-cols-12 gap-8 items-center" style={{ color: 'var(--background)' }}>
+            <div className="lg:col-span-7">
+              <h1 className="text-3xl lg:text-5xl font-bold leading-tight">{title}</h1>
+              <p className="mt-3 text-lg lg:text-2xl text-white/90">{subtitle}</p>
+              {slogan && <p className="mt-3 text-base text-white/80 font-medium">{slogan}</p>}
+              <button
+                className="mt-6 inline-flex items-center justify-center px-6 py-3 rounded-xl text-base lg:text-lg font-semibold shadow-lg transition-transform hover:scale-[1.03]"
+                style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
+              >
+                {cta}
+              </button>
+            </div>
+
+            {/* правый медиа-блок по вариантам */}
+            <div className="lg:col-span-5">
+              {variant === 'withTeam' && teamImage && (
+                <div className="aspect-[4/3] rounded-xl overflow-hidden ring-1 ring-white/10">
+                  <img src={teamImage} alt="team" className="w-full h-full object-cover" />
+                </div>
+              )}
+              {variant !== 'withTeam' && logoUrl && (
+                <div className="flex items-center justify-center">
+                  {/* логотип на стеклянной плашке */}
+                  <div className="backdrop-blur-md bg-white/10 rounded-full">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={logoUrl} alt="logo" className="h-24 object-contain" />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Directions Cards - 3 cards */}
+        {/* лента направлений (если есть) */}
         {directions.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {directions.slice(0, 3).map((direction, index) => (
-              <div key={index} className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <div className="text-3xl">{direction.icon}</div>
+          <div className="bg-white/10">
+            <div className="px-4 lg:px-8 py-5 overflow-x-auto scroll-smooth snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none]"
+                 style={{ WebkitOverflowScrolling: 'touch' }}>
+              <div className="hidden lg:grid lg:grid-cols-3 gap-4">
+                {directions.slice(0, 3).map((d, i) => (
+                  <div key={i} className="rounded-xl p-5 bg-white text-left shadow-sm"
+                       style={{ color: 'var(--foreground)' }}>
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+                           style={{ backgroundColor: 'color-mix(in srgb, var(--culture-accent) 5%, #fff)' }}>
+                        <span className="text-xl">{d.icon}</span>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">{d.title}</h3>
+                        <p className="text-sm mt-1" style={{ color: 'var(--muted-foreground)' }}>{d.description}</p>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">
-                    {direction.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {direction.description}
-                  </p>
-                </div>
+                ))}
               </div>
-            ))}
+
+              {/* slider для планшета/мобилки и случаев >3 */}
+              <div className="flex lg:hidden gap-3 min-w-full">
+                {directions.map((d, i) => (
+                  <div key={i}
+                       className="snap-start shrink-0 basis-[80%] xs:basis-[70%] sm:basis-[60%] rounded-xl p-5 bg-white shadow-sm">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+                           style={{ backgroundColor: 'color-mix(in srgb, var(--culture-accent) 5%, #fff)' }}>
+                        <span className="text-xl">{d.icon}</span>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold" style={{ color: 'var(--foreground)' }}>{d.title}</h3>
+                        <p className="text-sm mt-1" style={{ color: 'var(--muted-foreground)' }}>{d.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>

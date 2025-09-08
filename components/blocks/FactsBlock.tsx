@@ -1,71 +1,46 @@
-import React from 'react'
-
-interface FactItem {
-  number: string
-  label: string
-  description?: string
-  icon?: string
-  image?: string
-}
-
-interface FactsBlockProps {
-  title: string
-  subtitle?: string
-  items: FactItem[]
-  variant: string
-}
+import { FactsBlockProps } from '@/lib/types'
 
 export function FactsBlock({ title, subtitle, items = [], variant }: FactsBlockProps) {
   return (
-    <section className="py-16 px-4 bg-gray-50">
+    <section className="py-12 px-4" style={{ backgroundColor: 'var(--facts-bg)' }}>
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            {title}
-          </h2>
-          {subtitle && (
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {subtitle}
-            </p>
-          )}
-        </div>
+        <div
+          className="rounded-2xl p-8 lg:p-12 shadow-xl"
+          style={{ background: `linear-gradient(135deg, var(--facts-accent), var(--primary))` }}
+        >
+          <header className="mb-8 text-center">
+            <h2 className="text-3xl lg:text-5xl font-bold" style={{ color: 'var(--background)' }}>
+              {title}
+            </h2>
+            {subtitle && (
+              <p className="mt-2 text-lg max-w-3xl mx-auto" style={{ color: 'var(--background)' }}>
+                {subtitle}
+              </p>
+            )}
+          </header>
 
-        <div className="bg-gradient-to-r from-green-400 to-green-600 rounded-3xl p-12 shadow-2xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-            {items.map((item, index) => (
-              <div key={index} className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
-                <div className="text-center">
-                  {item.icon && (
-                    <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <span className="text-3xl">{item.icon}</span>
-                    </div>
-                  )}
-                  <div className="text-4xl font-bold text-green-600 mb-2">
-                    {item.number}
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">
-                    {item.label}
-                  </h3>
-                  {item.description && (
-                    <p className="text-gray-600 text-sm">
-                      {item.description}
-                    </p>
-                  )}
-                  {item.image && (
-                    <div className="mt-4 w-full h-20 relative">
-                      <img
-                        src={item.image}
-                        alt={item.label}
-                        className="w-full h-full object-cover rounded-2xl"
-                      />
-                    </div>
-                  )}
+          <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
+            {items.map((it, i) => (
+              <div
+                key={i}
+                className="rounded-xl bg-white p-5 shadow-sm text-center"
+              >
+                <div className="text-3xl font-bold" style={{ color: 'var(--facts-accent)' }}>
+                  {it.number}
                 </div>
+                <div className="mt-1 font-semibold" style={{ color: 'var(--foreground)' }}>
+                  {it.label}
+                </div>
+                {it.description && (
+                  <p className="mt-1 text-sm" style={{ color: 'var(--muted-foreground)' }}>
+                    {it.description}
+                  </p>
+                )}
               </div>
             ))}
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }

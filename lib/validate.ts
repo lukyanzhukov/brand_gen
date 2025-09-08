@@ -1,4 +1,4 @@
-import { PageLayout } from './layout'
+import { PageLayout } from './generate-unified'
 
 export interface ValidationResult {
   isValid: boolean

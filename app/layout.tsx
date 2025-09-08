@@ -5,8 +5,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Brand Gen - HH.ru Page Generator',
-  description: 'Генератор бренд-страниц работодателей для hh.ru',
+  title: 'BrandGen - AI-powered brand page generator',
+  description: 'Забрендируй свою компанию за секунды! Создавай крутые бренд-страницы для hh.ru с помощью AI',
 }
 
 export default function RootLayout({
