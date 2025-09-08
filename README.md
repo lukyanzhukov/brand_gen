@@ -26,7 +26,7 @@
 4. Настройте переменные окружения в `.env.local`:
    ```env
    OPENAI_API_KEY=your_openai_api_key_here
-   BASE_URL=https://api.openai.com/v1
+   BASE_URL=https://llmgtw.hhdev.ru/proxy/openai
    HH_API_BASE=https://api.hh.ru
    ```
 
