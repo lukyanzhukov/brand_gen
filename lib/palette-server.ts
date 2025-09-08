@@ -1,27 +1,43 @@
-import { generateJsonContent } from './llm-server'
+import { generateJsonContentWithImage } from './llm-server'
 import { ColorPalette, FALLBACK_PALETTE } from './palette'
 
 /**
- * Генерирует цветовую палитру на основе текста вакансий и логотипа (серверная версия)
+ * Скачивает изображение и конвертирует в base64
  */
-export async function generatePalette(vacancyCorpus: string, logoUrl?: string): Promise<ColorPalette> {
-  const systemPrompt = `Ты - эксперт по цветовому дизайну и брендингу. Твоя задача - создать гармоничную цветовую палитру для бренд-страницы работодателя.
+async function downloadImageAsBase64(url: string): Promise<string | null> {
+  try {
+    console.log('🖼️ Downloading image:', url)
+    const response = await fetch(url)
+    if (!response.ok) {
+      console.log('❌ Failed to download image:', response.status)
+      return null
+    }
+    
+    const arrayBuffer = await response.arrayBuffer()
+    const base64 = Buffer.from(arrayBuffer).toString('base64')
+    const mimeType = response.headers.get('content-type') || 'image/jpeg'
+    
+    console.log('✅ Image downloaded and converted to base64')
+    return `data:${mimeType};base64,${base64}`
+  } catch (error) {
+    console.error('❌ Error downloading image:', error)
+    return null
+  }
+}
 
-СЛЕДУЙ ГАЙДЛАЙНУ НАПОЛНЕНИЯ КОМПОНЕНТОВ:
+/**
+ * Генерирует цветовую палитру на основе логотипа и информации о компании
+ */
+export async function generatePalette(vacancyCorpus: string, logoUrl?: string, companyName?: string): Promise<ColorPalette> {
+  console.log('🎨 Generating palette for:', { companyName, logoUrl })
 
-## АНАЛИЗ ЛОГОТИПА
-- **ОБЯЗАТЕЛЬНО анализируй логотип** для выбора основных цветов
-- **Избегай стандартных синих палитр**, если логотип не синий
-- **Извлекай доминирующие цвета** из логотипа
-- **Создавай гармоничные сочетания** на основе логотипа
+  const systemPrompt = `Ты - эксперт по цветовому дизайну и брендингу. Твоя задача - создать подходящую цветовую палитру для бренд-страницы работодателя.
 
-## ПСИХОЛОГИЯ ЦВЕТОВ
-- **Зеленые**: рост, инновации, экология, стабильность
-- **Фиолетовые**: креативность, технологии, премиальность, инновации
-- **Оранжевые**: энергия, динамика, дружелюбность, активность
-- **Красные**: лидерство, амбиции, результат, страсть
-- **Синие**: надежность, профессионализм, технологии (только если логотип синий)
-- **Серые**: нейтральность, профессионализм, элегантность
+## АНАЛИЗ ЛОГОТИПА И СОЗДАНИЕ ПАЛИТРЫ
+- **ПРОАНАЛИЗИРУЙ ЛОГОТИП** - извлеки основные цвета из логотипа компании
+- **Используй цвета логотипа** как основу для палитры
+- **Создавай гармоничные сочетания** на основе цветов логотипа
+- **Адаптируй палитру** под характер и сферу деятельности компании
 
 ## ПРИНЦИПЫ ДИЗАЙНА
 - **Современные и профессиональные** цвета
@@ -29,20 +45,6 @@ export async function generatePalette(vacancyCorpus: string, logoUrl?: string): 
 - **Эмоционально подходящие** для IT-компании
 - **Гармоничные сочетания** цветов
 - **Доступность** для людей с нарушениями зрения
-
-## КРИТИЧЕСКИ ВАЖНО
-1. **Анализируй логотип** перед выбором цветов
-2. **Избегай стандартных синих** палитр без анализа
-3. **Создавай эмоционально подходящие** цвета
-4. **Используй современные** цветовые тренды
-5. **Обеспечивай высокий контраст** для читаемости
-
-## ЦВЕТОВЫЕ СЕМЬИ
-- **Теплые**: #FF6B35, #F7931E, #FFD23F, #06FFA5, #118AB2
-- **Природные**: #2D5016, #4A7C59, #7BA05B, #9ACD32, #ADFF2F
-- **Креативные**: #6A4C93, #C44569, #F8B500, #FF6B6B, #4ECDC4
-- **Профессиональные**: #1E3A8A, #3B82F6, #06B6D4, #10B981, #F59E0B
-- **Элегантные**: #374151, #6B7280, #9CA3AF, #D1D5DB, #F3F4F6
 
 ## СТРУКТУРА ПАЛИТРЫ
 - **primary**: основной цвет (из логотипа или гармонирующий)
@@ -73,25 +75,124 @@ export async function generatePalette(vacancyCorpus: string, logoUrl?: string): 
 
 Верни объект с hex-цветами. Все цвета должны гармонично сочетаться и отражать характер компании.`
 
-  const userPrompt = `Текст вакансий для анализа тона и стиля:
-${vacancyCorpus}
+  const userPrompt = `СОЗДАЙ ЦВЕТОВУЮ ПАЛИТРУ ДЛЯ КОМПАНИИ:
 
-${logoUrl ? `Логотип компании: ${logoUrl}
-Проанализируй цвета логотипа и создай палитру, которая гармонирует с ним.` : ''}
+${companyName ? `Компания: ${companyName}` : ''}
+${logoUrl ? `Логотип предоставлен ниже` : ''}
+${vacancyCorpus ? `Описание компании: ${vacancyCorpus}` : ''}
 
-Подбери палитру, которая отражает характер компании и вакансий.`
+ЗАДАЧА:
+1. **ПРОАНАЛИЗИРУЙ ЛОГОТИП** и извлеки основные цвета
+2. **Используй цвета логотипа** как основу для палитры
+3. **Создай гармоничную палитру** на основе цветов логотипа
+4. **Адаптируй под характер компании** и сферу деятельности
+
+Верни ТОЛЬКО JSON с цветовой палитрой в формате:
+{
+  "primary": "#цвет",
+  "onPrimary": "#ffffff",
+  "secondary": "#64748b",
+  "onSecondary": "#ffffff",
+  "background": "#ffffff",
+  "surface": "#f8fafc",
+  "onBackground": "#0f172a",
+  "onSurface": "#334155",
+  "accent": "#цвет",
+  "onAccent": "#ffffff",
+  "error": "#dc2626",
+  "onError": "#ffffff",
+  "outline": "#e2e8f0",
+  "hero": {
+    "background": "#f8fafc",
+    "text": "#0f172a",
+    "accent": "#цвет"
+  },
+  "about": {
+    "background": "#ffffff",
+    "text": "#0f172a",
+    "accent": "#цвет"
+  },
+  "tracks": {
+    "background": "#ffffff",
+    "text": "#0f172a",
+    "accent": "#цвет"
+  },
+  "geo": {
+    "background": "#ffffff",
+    "text": "#0f172a",
+    "accent": "#цвет"
+  },
+  "facts": {
+    "background": "#f8fafc",
+    "text": "#0f172a",
+    "accent": "#цвет"
+  },
+  "benefits": {
+    "background": "#f8fafc",
+    "text": "#0f172a",
+    "accent": "#цвет"
+  },
+  "culture": {
+    "background": "#ffffff",
+    "text": "#0f172a",
+    "accent": "#цвет"
+  },
+  "media": {
+    "background": "#ffffff",
+    "text": "#0f172a",
+    "accent": "#цвет"
+  },
+  "hiring": {
+    "background": "#ffffff",
+    "text": "#0f172a",
+    "accent": "#цвет"
+  },
+  "cta": {
+    "background": "#цвет",
+    "text": "#ffffff",
+    "accent": "#ffffff"
+  }
+}`
 
   try {
-    const palette = await generateJsonContent(systemPrompt, userPrompt, FALLBACK_PALETTE)
+    console.log('🎨 Calling LLM for palette generation...')
     
+    // Если есть логотип, скачиваем его и анализируем
+    let imageBase64: string | null = null
+    if (logoUrl) {
+      imageBase64 = await downloadImageAsBase64(logoUrl)
+    }
+    
+    // Используем vision модель если есть изображение
+    const model = imageBase64 ? 'gpt-4o' : 'gpt-4o-mini'
+    console.log('🎨 Using model:', model)
+
+    const palette = await generateJsonContentWithImage(systemPrompt, userPrompt, FALLBACK_PALETTE, model, imageBase64)
+    console.log('🎨 LLM returned palette:', JSON.stringify(palette, null, 2))
+
     // Валидация цветов
     if (isValidPalette(palette)) {
+      console.log('✅ Palette validation passed')
       return palette
+    } else {
+      console.log('❌ Palette validation failed, trying again with simpler prompt')
+      // Попробуем еще раз с более простым промптом
+      const simplePrompt = `Создай цветовую палитру для компании "${companyName}". 
+Используй психологию цветов и создай гармоничную палитру.
+Верни JSON: {"primary": "#цвет", "accent": "#цвет", "background": "#ffffff", "surface": "#f8fafc", "onBackground": "#0f172a", "onSurface": "#334155"}`
+      
+      const retryPalette = await generateJsonContentWithImage(simplePrompt, '', FALLBACK_PALETTE, 'gpt-4o-mini')
+      if (isValidPalette(retryPalette)) {
+        console.log('✅ Retry palette validation passed')
+        return retryPalette
+      }
     }
   } catch (error) {
-    console.error('Error generating palette:', error)
+    console.error('❌ Error generating palette:', error)
   }
 
+  // Если все попытки не удались, используем fallback
+  console.log('🎨 All attempts failed, using fallback palette')
   return FALLBACK_PALETTE
 }
 
@@ -99,15 +200,17 @@ ${logoUrl ? `Логотип компании: ${logoUrl}
  * Проверяет валидность палитры
  */
 function isValidPalette(palette: any): palette is ColorPalette {
-  const requiredFields = [
-    'primary', 'onPrimary', 'secondary', 'onSecondary',
-    'background', 'surface', 'onBackground', 'onSurface',
-    'accent', 'onAccent', 'error', 'onError', 'outline'
-  ]
+  if (!palette || typeof palette !== 'object') {
+    return false
+  }
+  
+  // Проверяем только основные поля
+  const requiredFields = ['primary', 'accent']
   
   return requiredFields.every(field => 
-    palette && 
+    palette[field] && 
     typeof palette[field] === 'string' && 
-    palette[field].startsWith('#')
+    palette[field].startsWith('#') &&
+    palette[field].length === 7 // #RRGGBB
   )
 }
